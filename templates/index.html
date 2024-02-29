@@ -20,15 +20,25 @@
         socket.emit('json', {'user': user, 'answer': message});
       }
 
+      function joinRoom() {
+        var user = document.getElementById('user').value;
+        var room = document.getElementById('room').value;
+        socket.emit('join', {'username': user, 'room': room});
+      }
+
       
     </script>
   </head>
   <body>
+    <label for="user">User:</label><br>
+    <input id="user" type="text"><br>
+    <label for="message">message:</label><br>
+    <input id="message" type="text"><br>
+    <label for="room">room:</label><br>
+    <input id="room" type="text"><br>
     
-    <input id="user" type="text">
-    <br>
-    <input id="message" type="text">
     <button onclick="sendMessage()">Send</button>
+    <button onclick="joinRoom()">Join Room</button>
     <div id="chat"></div>
     <div id="json"></div>
   </body>

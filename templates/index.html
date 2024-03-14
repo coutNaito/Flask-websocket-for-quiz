@@ -14,10 +14,11 @@
       function sendMessage() {
         var user = document.getElementById('user').value;
         var message = document.getElementById('message').value;
+        var room = document.getElementById('room').value;
         //sent string data
         socket.emit('message', message);
         //Sent JSON data
-        socket.emit('json', {'user': user, 'answer': message});
+        socket.emit('json', {'user': user, 'answer': message, 'room': room});
       }
 
       function joinRoom() {
@@ -26,6 +27,8 @@
         socket.emit('join', {'username': user, 'room': room});
       }
 
+      //Session storage
+      sessionStorage.setItem()
       
     </script>
   </head>

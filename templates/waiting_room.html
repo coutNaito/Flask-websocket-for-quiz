@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+      //Flask socket
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      
+      //Update content
+      socket.on('update_content', function(data) {
+        document.getElementById('content').innerHTML = data.new_content;
+      });
+
+      //Normal javascript
+      function display_info() {
+        var room_code = document.createElement('p');
+        room_code.textContent = "Room code: " + sessionStorage.getItem('room');
+        
+        var user = document.createElement('p');
+        user.textContent = "User: " + sessionStorage.getItem('user');
+
+        document.getElementById('content').appendChild(room_code);
+        document.getElementById('content').appendChild(user);
+      }
+      
+      //MutationObserver
+      const observer = new MutationObserver(onChange);
+      const config = {
+            childList: true,
+            subtree: true
+        };
+
+      // Start observing changes in the DOM
+      observer.observe(document.body, config);
+      
+      function onChange(mutationsList, observer) {
+            for(let mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.target.id === 'content') {
+                    console.log("Content changed");
+                    display_info();
+                }
+            }
+        }
+      
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <h1>waiting_room</h1>
+      <br>
+      <p id="room_code"></p>
+      <br>
+      <p id="user"></p>
+      <label for="message">message:</label><br>
+      <input id="message" type="text"><br>
+      
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="display_info()">Manual display info</button>
+      <div id="chat"></div>
+      <div id="json"></div>
+    </div>
+  </body>
+</html>

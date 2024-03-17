@@ -3,46 +3,46 @@
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script>
       var socket = io.connect('http://' + document.domain + ':' + location.port);
-      
-      socket.on('message', function(data) {
-        document.getElementById('chat').innerHTML += '<br>' + data;
+      sessionStorage.setItem('stage', 'index');
+      socket.on('update_content', function(data) {
+        document.getElementById('content').innerHTML = data.new_content;
       });
-      socket.on('json', function(data) {
-        document.getElementById('json').innerHTML += '<br>' + data.user + ': ' + data.answer;
-      });
-
-      function sendMessage() {
-        var user = document.getElementById('user').value;
-        var message = document.getElementById('message').value;
-        var room = document.getElementById('room').value;
-        //sent string data
-        socket.emit('message', message);
-        //Sent JSON data
-        socket.emit('json', {'user': user, 'answer': message, 'room': room});
-      }
 
       function joinRoom() {
         var user = document.getElementById('user').value;
         var room = document.getElementById('room').value;
         socket.emit('join', {'username': user, 'room': room});
+        sessionStorage.setItem('stage', 'waiting_room');
+        sessionStorage.setItem('user', user);
+        sessionStorage.setItem('room', room);
       }
-
-      //Session storage
-      sessionStorage.setItem()
+      
+      //validate form
+      function validateForm() {
+        var user = document.getElementById('user').value;
+        var room = document.getElementById('room').value;
+        if (user == "" || room == "") {
+          alert("Name and room must be filled out");
+        }
+        else {
+          joinRoom();
+        }
+      }
+      
       
     </script>
   </head>
   <body>
-    <label for="user">User:</label><br>
-    <input id="user" type="text"><br>
-    <label for="message">message:</label><br>
-    <input id="message" type="text"><br>
-    <label for="room">room:</label><br>
-    <input id="room" type="text"><br>
+    <div id="content">
+      <label for="user">User:</label><br>
+      <input id="user" type="text" ><br>
+      <label for="room">room:</label ><br>
+      <input id="room" type="text"><br>
+      
+      <button onclick="validateForm()">Join Room</button>
+      <div id="chat"></div>
+      <div id="json"></div>
+    </div>
     
-    <button onclick="sendMessage()">Send</button>
-    <button onclick="joinRoom()">Join Room</button>
-    <div id="chat"></div>
-    <div id="json"></div>
   </body>
 </html>

@@ -9,11 +9,16 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
+@app.route('/waiting_room')
+def waiting_room():
+    return render_template('waiting_room.html')
+
 #Communication between server and client
+#Broadcast to all clients on websocket
 @socketio.on('message')
-def handle_message(message):
-    print('received message: ' + message + '\n')
-    socketio.emit('message', message)
+def handle_message(data):
+    print('received message: ' + data + '\n')
+    socketio.emit('message', data)
 
 @socketio.on('json')
 def handle_json(data):
@@ -22,18 +27,16 @@ def handle_json(data):
     print('received json: ' + str(data) + '\n')
     socketio.emit('json', data, room=room)
 
-@socketio.on('Anouncement')
-def handle_announcement(data):
-    room = data['room']
-    print('received announcement: ' + data + '\n')
-    socketio.emit('Anouncement', data, room=room)
-
 #Rooms
 @socketio.on('join')
 def on_join(data):
+    #Create Room for User
     username = data['username']
     room = data['room']
     join_room(room)
+    with open('Quiz_session/Flask-websocket-for-quiz/templates/waiting_room.html', 'r') as f:
+        new_content = f.read()
+    socketio.emit('update_content', {'new_content': new_content})
     send(username + ' has entered the room.', room=room)
 
 @socketio.on('leave')
